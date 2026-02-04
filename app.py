@@ -104,11 +104,7 @@ st.markdown("""
         color: white !important;
         font-weight: 900 !important;
     }
-    .stCaption, [data-testid="stCaption"], .caption {
-        color: white !important;
-        font-weight: 500 !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
-    }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -281,8 +277,8 @@ st.sidebar.markdown("Anime Analytics Dashboard")
 st.sidebar.markdown("MSc Data Science Project")
 st.sidebar.markdown("University of Europe for Applied Sciences")
 st.sidebar.markdown("---")
-st.sidebar.caption("**Author:** Pratik Gotakhinde")
-st.sidebar.caption("**Dataset:** [Anime Dataset (Kaggle)](https://www.kaggle.com/datasets/neelagiriaditya/anime-dataset-jan-1917-to-oct-2025)")
-st.sidebar.caption("**Background Image:** [Unsplash - @williamallace](https://unsplash.com/@williamwallace)")
-st.sidebar.caption("---")
-st.sidebar.caption("© 2026 All rights reserved")
+st.sidebar.markdown("**Author:** Pratik Gotakhinde")
+st.sidebar.markdown("**Dataset:** [Anime Dataset (Kaggle)](https://www.kaggle.com/datasets/neelagiriaditya/anime-dataset-jan-1917-to-oct-2025)")
+st.sidebar.markdown("**Background Image:** [Unsplash - @williamallace](https://unsplash.com/@williamwallace)")
+st.sidebar.markdown("---")
+st.sidebar.markdown("© 2026 All rights reserved")
