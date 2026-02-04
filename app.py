@@ -104,7 +104,11 @@ st.markdown("""
         color: white !important;
         font-weight: 900 !important;
     }
-
+    .stCaption, [data-testid="stCaption"], .caption {
+        color: rgba(255, 255, 255, 0.85) !important;
+        font-weight: 500 !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    }
 </style>
 """, unsafe_allow_html=True)
 
