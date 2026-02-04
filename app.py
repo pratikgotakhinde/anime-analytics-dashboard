@@ -3,39 +3,17 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import base64
 
 st.set_page_config(page_title="Anime Analytics Dashboard", layout="wide")
-
-def add_bg_from_local(image_file):
-    try:
-        with open(image_file, "rb") as f:
-            img_data = f.read()
-        b64_encoded = base64.b64encode(img_data).decode()
-        
-        st.markdown(
-            f"""
-            <style>
-            .stApp {{
-                background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-                            url(data:image/png;base64,{b64_encoded});
-                background-size: cover;
-                background-position: center;
-                background-attachment: fixed;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-    except:
-        pass
-
-add_bg_from_local('anime_background.jpg')
 
 st.markdown("""
 <style>
     .stApp {
-        background: linear-gradient(135deg, rgba(26, 28, 36, 0.95), rgba(44, 47, 58, 0.95));
+        background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+                    url('https://unsplash.com/photos/a-large-collection-of-anime-action-figures-displayed-together-XjnQ9FhRHvs');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
     }
     
     .main-header {
@@ -193,14 +171,8 @@ with tab1:
     with col1:
         st.subheader("Score Distribution")
         fig = px.histogram(df_filtered, x='score', nbins=40, color_discrete_sequence=['#FF6B6B'])
-        fig.update_layout(
-            height=400, 
-            showlegend=False, 
-            xaxis_title="Score", 
-            yaxis_title="Count",
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(255,255,255,0.95)'
-        )
+        fig.update_layout(height=400, showlegend=False, xaxis_title="Score", yaxis_title="Count",
+                         plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(255,255,255,0.95)')
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -210,52 +182,32 @@ with tab1:
             top_studios = pd.Series(studios_flat).value_counts().head(10)
             fig = px.bar(x=top_studios.values, y=top_studios.index, orientation='h',
                         color_discrete_sequence=['#4ECDC4'])
-            fig.update_layout(
-                height=400, 
-                showlegend=False, 
-                yaxis_title="", 
-                xaxis_title="Count",
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(255,255,255,0.95)'
-            )
+            fig.update_layout(height=400, showlegend=False, yaxis_title="", xaxis_title="Count",
+                            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(255,255,255,0.95)')
             st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
     st.subheader("Hidden Gems Analysis")
     
-    df_gems = df_filtered[
-        (df_filtered['recommendation_count'].notna()) & 
-        (df_filtered['members'] > 100)
-    ].copy()
+    df_gems = df_filtered[(df_filtered['recommendation_count'].notna()) & (df_filtered['members'] > 100)].copy()
     
     if len(df_gems) > 0:
         df_gems['rec_ratio'] = df_gems['recommendation_count'] / df_gems['members']
-        
         median_members = df_gems['members'].median()
         median_ratio = df_gems['rec_ratio'].median()
         
-        fig = px.scatter(df_gems, x='members', y='rec_ratio', 
-                        color='score', size='recommendation_count',
-                        hover_data=['title', 'score', 'members'],
-                        title='Hidden Gems: Recommendation Efficiency',
+        fig = px.scatter(df_gems, x='members', y='rec_ratio', color='score', size='recommendation_count',
+                        hover_data=['title', 'score', 'members'], title='Hidden Gems: Recommendation Efficiency',
                         labels={'members': 'Members (Log Scale)', 'rec_ratio': 'Recommendation Ratio'},
                         color_continuous_scale='Viridis', log_x=True)
         
         fig.add_vline(x=median_members, line_dash="dash", line_color="gray")
         fig.add_hline(y=median_ratio, line_dash="dash", line_color="gray")
-        fig.update_layout(
-            height=600,
-            plot_bgcolor='rgba(240,240,240,0.95)',
-            paper_bgcolor='rgba(255,255,255,0.95)'
-        )
-        
+        fig.update_layout(height=600, plot_bgcolor='rgba(240,240,240,0.95)', paper_bgcolor='rgba(255,255,255,0.95)')
         st.plotly_chart(fig, use_container_width=True)
         
         st.markdown("#### Top Hidden Gems")
-        hidden = df_gems[
-            (df_gems['members'] < median_members) & 
-            (df_gems['rec_ratio'] > median_ratio)
-        ].nlargest(10, 'rec_ratio')[['title', 'score', 'members', 'rec_ratio']]
+        hidden = df_gems[(df_gems['members'] < median_members) & (df_gems['rec_ratio'] > median_ratio)].nlargest(10, 'rec_ratio')[['title', 'score', 'members', 'rec_ratio']]
         st.dataframe(hidden, use_container_width=True, hide_index=True)
 
 with tab3:
@@ -273,22 +225,11 @@ with tab3:
             decade_data = df_trends[df_trends['decade'] == decade]
             decade_genres = [g for genres in decade_data['genres_list'] for g in genres]
             for genre in top_genres:
-                genre_counts.append({
-                    'decade': decade,
-                    'genre': genre,
-                    'count': decade_genres.count(genre)
-                })
+                genre_counts.append({'decade': decade, 'genre': genre, 'count': decade_genres.count(genre)})
         
         genre_df = pd.DataFrame(genre_counts)
-        
-        fig = px.line(genre_df, x='decade', y='count', color='genre',
-                     title='Genre Evolution Over Decades', markers=True)
-        fig.update_layout(
-            height=500, 
-            hovermode='x unified',
-            plot_bgcolor='rgba(240,240,240,0.95)',
-            paper_bgcolor='rgba(255,255,255,0.95)'
-        )
+        fig = px.line(genre_df, x='decade', y='count', color='genre', title='Genre Evolution Over Decades', markers=True)
+        fig.update_layout(height=500, hovermode='x unified', plot_bgcolor='rgba(240,240,240,0.95)', paper_bgcolor='rgba(255,255,255,0.95)')
         st.plotly_chart(fig, use_container_width=True)
     
     st.markdown("---")
@@ -297,26 +238,15 @@ with tab3:
     with col1:
         st.markdown("#### Type Distribution")
         type_counts = df_filtered['type'].value_counts().head(6)
-        fig = px.pie(values=type_counts.values, names=type_counts.index, hole=0.4,
-                    color_discrete_sequence=px.colors.sequential.RdBu)
-        fig.update_layout(
-            height=350,
-            paper_bgcolor='rgba(255,255,255,0.95)'
-        )
+        fig = px.pie(values=type_counts.values, names=type_counts.index, hole=0.4, color_discrete_sequence=px.colors.sequential.RdBu)
+        fig.update_layout(height=350, paper_bgcolor='rgba(255,255,255,0.95)')
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
         st.markdown("#### Average Score by Type")
         type_scores = df_filtered.groupby('type')['score'].mean().sort_values(ascending=False).head(6)
-        fig = px.bar(x=type_scores.values, y=type_scores.index, orientation='h',
-                    color_discrete_sequence=['#E74C3C'])
-        fig.update_layout(
-            height=350, 
-            xaxis_title="Average Score", 
-            yaxis_title="",
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(255,255,255,0.95)'
-        )
+        fig = px.bar(x=type_scores.values, y=type_scores.index, orientation='h', color_discrete_sequence=['#E74C3C'])
+        fig.update_layout(height=350, xaxis_title="Average Score", yaxis_title="", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(255,255,255,0.95)')
         st.plotly_chart(fig, use_container_width=True)
 
 with tab4:
@@ -333,13 +263,15 @@ with tab4:
     
     display_cols = ['title', 'score', 'year', 'type', 'episodes', 'members', 'favorites']
     available_cols = [col for col in display_cols if col in results.columns]
-    
-    st.dataframe(
-        results[available_cols].sort_values('score', ascending=False).head(100),
-        use_container_width=True,
-        hide_index=True
-    )
+    st.dataframe(results[available_cols].sort_values('score', ascending=False).head(100), use_container_width=True, hide_index=True)
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("Anime Analytics Dashboard")
 st.sidebar.markdown("MSc Data Science Project")
+st.sidebar.markdown("University of Europe for Applied Sciences")
+st.sidebar.markdown("---")
+st.sidebar.caption("**Author:** Pratik Gotakhinde")
+st.sidebar.caption("**Dataset:** [Anime Dataset (Kaggle)](https://www.kaggle.com/datasets/neelagiriaditya/anime-dataset-jan-1917-to-oct-2025)")
+st.sidebar.caption("**Background Image:** [Unsplash - @williamallace](https://unsplash.com/@williamwallace)")
+st.sidebar.caption("---")
+st.sidebar.caption("© 2026 All rights reserved")
