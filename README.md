@@ -20,8 +20,7 @@ Interactive dashboard analyzing 108 years of anime data spanning 1917 to 2025.
 
 Clone the repository:
 ```bash
-[git clone https://github.com/YOUR_USERNAME/anime-analytics-dashboard.git
-](https://github.com/pratikgotakhinde/anime-analytics-dashboard.git)
+git clone https://github.com/pratikgotakhinde/anime-analytics-dashboard.git
 cd anime-analytics-dashboard
 
 pip install -r requirements.txt
