@@ -3,12 +3,123 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import base64
 
-st.set_page_config(page_title="Anime Analytics Dashboard", page_icon="", layout="wide")
+st.set_page_config(page_title="Anime Analytics Dashboard", layout="wide")
+
+def add_bg_from_local(image_file):
+    try:
+        with open(image_file, "rb") as f:
+            img_data = f.read()
+        b64_encoded = base64.b64encode(img_data).decode()
+        
+        st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                            url(data:image/png;base64,{b64_encoded});
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+    except:
+        pass
+
+add_bg_from_local('anime_background.jpg')
 
 st.markdown("""
 <style>
-    .main-header {font-size: 2.5rem; font-weight: bold; color: #FF6B6B; text-align: center; margin: 2rem 0;}
+    .stApp {
+        background: linear-gradient(135deg, rgba(26, 28, 36, 0.95), rgba(44, 47, 58, 0.95));
+    }
+    
+    .main-header {
+        font-size: 3rem; 
+        font-weight: 900; 
+        color: white;
+        text-align: center;
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+        padding: 2rem;
+        background: linear-gradient(135deg, rgba(255, 107, 107, 0.4), rgba(255, 142, 83, 0.4));
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 2px solid rgba(255, 107, 107, 0.5);
+        margin-bottom: 1rem;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.2rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        margin-bottom: 2rem;
+        font-weight: 300;
+    }
+    
+    [data-testid="stMetricValue"] {
+        color: #FF6B6B;
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 600;
+    }
+    
+    [data-testid="stSidebar"] {
+        background: rgba(26, 28, 36, 0.95);
+        backdrop-filter: blur(15px);
+    }
+    
+    [data-testid="stSidebar"] h1 {
+        color: white;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 10px;
+        border-radius: 10px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: rgba(255, 107, 107, 0.3);
+        color: white;
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-weight: 600;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+        color: white;
+    }
+    
+    [data-testid="stDataFrame"] {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 10px;
+    }
+    
+    .js-plotly-plot {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 10px;
+        padding: 10px;
+    }
+    
+    div[data-testid="stMarkdownContainer"] > p {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    h2, h3 {
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -17,7 +128,7 @@ def load_data():
     try:
         df = pd.read_csv('anime_dataset_cleaned.csv')
     except:
-        st.error("Dataset not found. Please upload anime_dataset.csv")
+        st.error("Dataset not found. Please upload anime_dataset_cleaned.csv")
         return None
     
     df['year'] = pd.to_datetime(df['start_date'], errors='coerce').dt.year
@@ -57,7 +168,7 @@ df_filtered = df[
 ].copy()
 
 st.markdown('<h1 class="main-header">Anime Analytics Dashboard</h1>', unsafe_allow_html=True)
-st.markdown("Exploring 108 years of anime data (1917-2025)")
+st.markdown('<p class="subtitle">Exploring 108 years of anime data (1917-2025)</p>', unsafe_allow_html=True)
 st.markdown("---")
 
 col1, col2, col3, col4 = st.columns(4)
@@ -82,7 +193,14 @@ with tab1:
     with col1:
         st.subheader("Score Distribution")
         fig = px.histogram(df_filtered, x='score', nbins=40, color_discrete_sequence=['#FF6B6B'])
-        fig.update_layout(height=400, showlegend=False, xaxis_title="Score", yaxis_title="Count")
+        fig.update_layout(
+            height=400, 
+            showlegend=False, 
+            xaxis_title="Score", 
+            yaxis_title="Count",
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(255,255,255,0.95)'
+        )
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -92,7 +210,14 @@ with tab1:
             top_studios = pd.Series(studios_flat).value_counts().head(10)
             fig = px.bar(x=top_studios.values, y=top_studios.index, orientation='h',
                         color_discrete_sequence=['#4ECDC4'])
-            fig.update_layout(height=400, showlegend=False, yaxis_title="", xaxis_title="Count")
+            fig.update_layout(
+                height=400, 
+                showlegend=False, 
+                yaxis_title="", 
+                xaxis_title="Count",
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(255,255,255,0.95)'
+            )
             st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
@@ -118,7 +243,11 @@ with tab2:
         
         fig.add_vline(x=median_members, line_dash="dash", line_color="gray")
         fig.add_hline(y=median_ratio, line_dash="dash", line_color="gray")
-        fig.update_layout(height=600)
+        fig.update_layout(
+            height=600,
+            plot_bgcolor='rgba(240,240,240,0.95)',
+            paper_bgcolor='rgba(255,255,255,0.95)'
+        )
         
         st.plotly_chart(fig, use_container_width=True)
         
@@ -154,7 +283,12 @@ with tab3:
         
         fig = px.line(genre_df, x='decade', y='count', color='genre',
                      title='Genre Evolution Over Decades', markers=True)
-        fig.update_layout(height=500, hovermode='x unified')
+        fig.update_layout(
+            height=500, 
+            hovermode='x unified',
+            plot_bgcolor='rgba(240,240,240,0.95)',
+            paper_bgcolor='rgba(255,255,255,0.95)'
+        )
         st.plotly_chart(fig, use_container_width=True)
     
     st.markdown("---")
@@ -163,8 +297,12 @@ with tab3:
     with col1:
         st.markdown("#### Type Distribution")
         type_counts = df_filtered['type'].value_counts().head(6)
-        fig = px.pie(values=type_counts.values, names=type_counts.index, hole=0.4)
-        fig.update_layout(height=350)
+        fig = px.pie(values=type_counts.values, names=type_counts.index, hole=0.4,
+                    color_discrete_sequence=px.colors.sequential.RdBu)
+        fig.update_layout(
+            height=350,
+            paper_bgcolor='rgba(255,255,255,0.95)'
+        )
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -172,7 +310,13 @@ with tab3:
         type_scores = df_filtered.groupby('type')['score'].mean().sort_values(ascending=False).head(6)
         fig = px.bar(x=type_scores.values, y=type_scores.index, orientation='h',
                     color_discrete_sequence=['#E74C3C'])
-        fig.update_layout(height=350, xaxis_title="Average Score", yaxis_title="")
+        fig.update_layout(
+            height=350, 
+            xaxis_title="Average Score", 
+            yaxis_title="",
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(255,255,255,0.95)'
+        )
         st.plotly_chart(fig, use_container_width=True)
 
 with tab4:
@@ -197,4 +341,5 @@ with tab4:
     )
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("Anime Analytics Dashboard - MSc Data Science")
+st.sidebar.markdown("Anime Analytics Dashboard")
+st.sidebar.markdown("MSc Data Science Project")
