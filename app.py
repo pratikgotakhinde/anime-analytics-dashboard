@@ -94,10 +94,17 @@ st.markdown("""
         color: rgba(255, 255, 255, 0.9);
     }
     
-    h2, h3 {
-        color: white;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    h1, h2, h3, h4, h5, h6 {
+        color: white !important;
+        font-weight: bold !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
     }
+    
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
+        color: white !important;
+        font-weight: 900 !important;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
