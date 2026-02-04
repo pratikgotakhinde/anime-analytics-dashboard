@@ -15,7 +15,7 @@ st.markdown("""
 @st.cache_data
 def load_data():
     try:
-        df = pd.read_csv('anime_dataset.csv')
+        df = pd.read_csv('anime_dataset_cleaned.csv')
     except:
         st.error("Dataset not found. Please upload anime_dataset.csv")
         return None
